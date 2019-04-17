@@ -91,7 +91,7 @@ create_est_table = function(out) {
   tab
 }
 ##### FUNCTION TO CREATE ESTPLOT2 (RELATIONSHIP) #####
-create_EstPlot2 = function(input, out) {
+create_EstPlot2 = function(input, out, btf_data, N_data) {
   if (!is.null(out$EstOut$boot_out)) {
     layout(matrix(c(1,2), 1, 2), widths = c(1,0.3))
     par(mar = c(2,3,1,0), xaxs = "i", yaxs = "i", oma = c(2,2,0,0))

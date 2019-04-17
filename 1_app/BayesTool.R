@@ -788,7 +788,7 @@ server = function(input, output, session) {
   
   observe(toggle(id = "EstPlot2_dropdown", condition = !is.null(out$EstOut)))
   output$EstPlot2 = renderPlot({
-    create_EstPlot2(input, out)
+    create_EstPlot2(input, out, btf_data, N_data)
   })
   
   output$DL_EstPlot2 = downloadHandler(
@@ -798,7 +798,7 @@ server = function(input, output, session) {
     content = function(file) {
       ppi = 600
       png(file, h = 5 * ppi, w = 7 * ppi, res = ppi)
-      create_EstPlot2(input, out)
+      create_EstPlot2(input, out, btf_data, N_data)
       dev.off()
     }
   )
