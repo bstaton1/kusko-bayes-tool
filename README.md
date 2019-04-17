@@ -6,7 +6,7 @@ This repository stores the source code for the Kuskokwim River Chinook salmon In
 
 The basic purpose of the Tool is to facilitate the probabilistic treatment of run size information when considering harvest targets for in-season management of Chinook salmon in the Kuskokwim River (in western Alaska). A pre-season run size forecast is treated as a prior distribution for the understanding of run size before new information becomes available. This distribution alone can be used to select a harvest target for the season that is consistent with ensuring escapement will not fall below some critical threshold with some level of confidence (_i.e._, risk tolerance) based on the available information. The prior distribution can be updated with new information as it accumulates in test fishery cumulative catch per effort (which shows a weak historical relationship with total run size that improves marginally as the run progresses). Harvest targets can then be adjusted to maintain the same level of risk with respect to unfavorable escapement outcomes. 
 
-The statistical method used by the Tool was retrospectively assessed and is presented in an article authored by the Tool Developers ([article](<https://www.nrcresearchpress.com/doi/10.1139/cjfas-2018-0176>); [code for analysis](<https://github.com/bstaton1/inseason-update-ms-analysis>)). More details about what the Tool does and how can be found in the [Technical Documentation](/Documentation/Create_Docs/BayesTool_TechDoc/BayesTool_TechDoc_PDF.pdf) and information about how to use it can be found in the [User Manual](Documentation/Create HTML/BayesTool_UserMan/BayesTool_UserMan.html).
+The statistical method used by the Tool was retrospectively assessed and is presented in an article authored by the Tool Developers ([article](<https://www.nrcresearchpress.com/doi/10.1139/cjfas-2018-0176>); [code for analysis](<https://github.com/bstaton1/inseason-update-ms-analysis>)). More details about what the Tool does and how can be found in the [Technical Documentation](/Documentation/Create_Docs/BayesTool_TechDoc/BayesTool_TechDoc_PDF.pdf) and information about how to use it can be found in the [User Manual](/Documentation/Create_Docs/BayesTool_UserMan/BayesTool_UserMan.html).
 
 ## Using the Tool
 
@@ -61,7 +61,7 @@ You will also find the code used to build the documentation for the Tool in the 
 
 ### More Information and Getting Help
 
-You are encouraged to read the [User Manual](Documentation/Create HTML/BayesTool_UserMan/BayesTool_UserMan.html) and [Technical Documentation](Documentation/Create HTML/BayesTool_TechDoc_PDF.pdf) for the Tool. These may also be accessed (along with other information) in the "About" tab of the Tool interface.
+You are encouraged to read the [User Manual](/Documentation/Create_Docs/BayesTool_UserMan/BayesTool_UserMan.html) and [Technical Documentation](/Documentation/Create_Docs/BayesTool_TechDoc/BayesTool_TechDoc_PDF.pdf) for the Tool. These may also be accessed (along with other information) in the "About" tab of the Tool interface.
 
 Bug fixes, feature requests, and further questions can either be submitted as issues to this repository or emailed to the Tool Developers directly (contact information located in the Tool interface).
 
