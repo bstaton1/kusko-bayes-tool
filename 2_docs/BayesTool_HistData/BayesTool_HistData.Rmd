@@ -1,0 +1,197 @@
+---
+title: "In-Season Bayesian Risk Assessment Tool"
+subtitle: "Historical Data"
+output: 
+  bookdown::pdf_document2:
+    toc: false
+    toc_depth: 2
+    includes:
+      in_header: preamble.tex
+    citation_package: natbib
+bibliography: cites.bib
+biblio-style: myapalike
+documentclass: article
+link-citations: true
+linkcolor: black
+urlcolor: black
+citecolor: black
+fontsize: 12pt
+editor_options: 
+  chunk_output_type: console
+---
+
+\thispagestyle{fancy}
+\pagenumbering{gobble}
+
+```{r setup, include=FALSE}
+# library(bookdown)
+knitr::opts_chunk$set(echo = F, warning = F, message = F)
+# htmltools::tagList(rmarkdown::html_dependency_font_awesome())
+```
+
+```{r Data prep}
+library(dplyr)           # easy data manipulation
+library(stringr)         # easy character manipulation
+library(reshape2)        # easy data manipulation
+library(mvtnorm)         # to draw random regression coefficients
+library(pander)
+library(knitr)
+library(kableExtra)
+
+rm(list = ls(all = T))
+
+# LOAD ALL NECESSARY FUNCTIONS 
+source("../../1_app/0b_util_funcs.R")
+source("../../1_app/0c_update_funcs.R")
+# source("0d_output_funcs.R")
+
+# PREPARE DATA FILES
+# a date lookup key
+dates = dates.prep(year = 2019)
+
+# historical BTF data
+btf_data = hist.index.prep(
+  f.date = "6/1", l.date = "8/24",
+  chinook = read.csv(file.path("../../1_app/Inputs", "Chinook Daily BTF.csv"), stringsAsFactors = F)
+)
+
+# historical total run abundance data
+N_data = read.csv(file.path("../../1_app/Inputs", "run_size_ests.csv"), stringsAsFactors = F)
+
+```
+
+# Purpose{-}
+
+This document is intended to be a companion to the _In-Season Chinook Salmon Bayesian Risk Assessment Tool_ (hereafter, "Bayes' Tool" or simply "the Tool") that provides some historical data users can test the Tool out with.
+
+This document is organized into two sections:
+
+1.  **Values for Estimation Tab**: here, users will find the appropriate information to enter on the Estimation tab for all years since 2008. Table \@ref(tab:fcst-table) shows the pre-season run size forecasts that would have been used had the run reconstruction [@liller-etal-2018] been available back then, if the forecasting rule used now had been used back then, and if the run estimates were the same back then as they are now. Table \@ref(tab:btf-table) shows the cumulative catch-per-unit-effort at weekly intervals starting on June 12^th^ in these years.
+
+2.  **Values for Reference**: here, users will find the "true" values the Tool attempts to estimate: run size and harvest levels given different escapement targets. 
+
+**NOTE**: it is inappropriate to interpret the output of the tool in these years as "management could have been so much better if the Tool had been used back then", because much of the data the Tool uses were not available back then. This document is provided simply to allow users to test the Tool and practice using and interpreting its output using real data.
+
+**The Tool was developed for Kuskokwim River Chinook salmon only**. Hereafter, all references in this document to salmon, fish, runs, escapement, and harvest are about the drainage-wide stock of Chinook salmon in the Kuskokwim River.
+
+# Resources{-}
+
+*  Tool interface: [**INSERT LINK**]
+*  Tool user manual: [**INSERT LINK**]
+*  Tool technical documentation: [**INSERT LINK**]
+*  Tool historical data (this document): [**INSERT LINK**]
+*  Source code for the Tool and all documentation: [**INSERT LINK**]
+
+\newpage
+
+# Values for Estimation Tab {-}
+
+```{r fcst-table}
+
+get_fcst_cv = function(yr) {
+  tmp_N_data = subset(N_data, year <= (yr - 1))
+  round(sig2cv(sd(log(tmp_N_data[1:(nrow(tmp_N_data)-1),"N"]) - log(tmp_N_data[2:nrow(tmp_N_data),"N"]))),2)
+}
+
+inc_yrs = 2008:max(N_data$year)
+
+cv = sapply(inc_yrs, get_fcst_cv)
+
+fcst = StatonMisc::prettify(round(N_data[N_data$year %in% (inc_yrs - 1),"N"], -3))
+
+tab = data.frame(year = inc_yrs, fcst = fcst, cv = cv)
+tab$year = paste("\\textbf{", tab$year, "}", sep = "")
+colnames(tab) = paste("\\textbf{", c("Year$^\\text{a}$", "Mean$^\\text{b}$", "CV"), "}", sep = "")
+
+kable(tab, "latex", booktabs = T,
+      caption = "Pre-season run size forecast expectation (mean) and uncertainty (coefficient of variation; CV). Run size data are from \\cite{liller-etal-2018}.",
+      escape = F, linesep = "", align = "crr") %>%
+  kable_styling(full_width = F, latex_options = c("HOLD_position", "striped"), stripe_color = "stripe-gray") %>%
+  column_spec(1:3, width = "75px") %>%
+  footnote(
+    general = "Do not enter commas into the tool.",
+    alphabet = c("The year the user is interested in testing out.",
+                 "Under the current forecast method, the mean for year $t$ is the value for year $t-1$. Values rounded to the nearest thousand fish."),
+    escape = F,
+    threeparttable = T)
+
+```
+
+```{r btf-table}
+
+# dates and years to include in table
+inc_yrs = 2008:max(N_data$year)
+inc_dates = c("6/12", "6/19", "6/26", "7/4", "7/11", "7/18")
+
+# extract/format the data for the table
+tab = filter(btf_data, year %in% inc_yrs & date %in% inc_dates) %>%
+  mutate(ccpue_rnd = round(ccpue)) %>%
+  select(date, year, ccpue_rnd) %>%
+  dcast(year ~ date, value.var = "ccpue_rnd")
+
+# reorder the columns: the order of dates got shuffled
+tab = tab[,c("year", inc_dates)]
+
+# format column headers and years to bold
+tab$year = paste("\\textbf{", tab$year, "}", sep = "")
+colnames(tab) = paste("\\textbf{", StatonMisc::capitalize(colnames(tab)), "}", sep = "")
+
+# make the table
+kable(tab, "latex", booktabs = T,
+      caption = "Cumulative catch-per-unit-effort (CCPUE) from the Bethel Test Fishery. 
+      These data are also available online$^\\text{a}$. The methods for the Bethel Test Fishery are described in \\cite{bue-lipka-2016}.",
+      escape = F, linesep = "", align = paste("c", paste(rep("r", length(inc_dates)), collapse = ""), sep = "")) %>%
+  kable_styling(full_width = F, latex_options = c("HOLD_position", "striped"), stripe_color = "stripe-gray") %>%
+  # column_spec(1:3, width = "75px") %>%
+  footnote(
+    alphabet = c("\\\\textbf{BTF Data:} \\\\url{http://www.adfg.alaska.gov/index.cfm?adfg=commercialbyareakuskokwim.btf}"),
+    escape = F,
+    threeparttable = T)
+
+```
+
+\newpage
+
+# Values for Reference {-}
+
+```{r}
+N_true = round(N_data[N_data$year %in% inc_yrs,"N"], -3)
+
+H_true = sapply(c(120000, 92500, 65000), function(x){
+  h = N_true - x
+  h = ifelse(h < 0, 0, h)
+  StatonMisc::prettify(h)
+})
+
+N_true = prettify(N_true)
+
+tab = cbind(year = inc_yrs, N = N_true, H_true)
+tab[,"year"] = paste("\\textbf{", tab[,"year"], "}", sep = "")
+colnames(tab) = paste("\\textbf{", c("Year", "Run Size$^\\text{1}$", "Minimum$^\\text{2}$", "Medium$^\\text{3}$", "Maximum$^\\text{d}$"), "}", sep = "")
+
+# make the table
+kable(tab, "latex", booktabs = T,
+      caption = "Estimated run size in each year and different levels of harvest that would have resulted in different levels of escapement. For example, the minimum value is the number of fish that could have been harvested to obtain exactly 120,000 escapement. Zero values indicate any level of harvest would have resulted in escapement less than the specific escapement level of interest.",
+      escape = F, linesep = "", align = paste("c", paste(rep("c", 4), collapse = ""), sep = "")) %>%
+  kable_styling(full_width = F, latex_options = c("HOLD_position", "striped"), stripe_color = "stripe-gray") %>%
+  column_spec(2:5, width = "75px") %>%
+  footnote(title_format = c("bold", "underline"),
+    footnote_order = c("general", "alphabet", "number", "symbol"),
+    general = "Values rounded to the nearest thousand fish.",
+    general_title = "",
+    number_title = "Harvest that would have resulted in escapement at the:",
+    alphabet = c(
+      "Most current run size estimates used; presented in \\\\cite{liller-etal-2018}"
+    ),
+    number = c(
+      "upper end of the escapement goal: 120,000",
+      "midpoint of the escapement goal: 92,500",
+      "lower end of the escapement goal: 65,000"
+      ),
+    
+    escape = F,
+    threeparttable = T)
+
+```
+
+\newpage

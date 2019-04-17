@@ -1,0 +1,27 @@
+.warnblock {
+  padding: 1em 1em 0.5em 1em;
+  margin-bottom: 10px;
+  background: #ffe6e6;
+  position: relative;
+}
+ 
+.infoblock {
+  padding: 1em 1em 0.5em 1em;
+  margin-bottom: 10px;
+  background: #e6e6ff;
+  position:relative;
+}
+
+.center {
+  display: block;
+  margin-left: auto;
+  margin-right: auto;
+  width: 80%;
+}
+
+.regblock {
+  padding: 1em 1em 0.5em 1em;
+  margin-bottom: 10px;
+  background: #F0F8FF;
+  position:relative;
+}
