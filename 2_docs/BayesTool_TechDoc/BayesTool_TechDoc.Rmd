@@ -31,16 +31,14 @@ library(dplyr)           # easy data manipulation
 library(stringr)         # easy character manipulation
 library(reshape2)        # easy data manipulation
 library(mvtnorm)         # to draw random regression coefficients
-library(pander)
 library(knitr)
 library(kableExtra)
 
 rm(list = ls(all = T))
 
 # LOAD ALL NECESSARY FUNCTIONS 
-source("../../../1_app/0b_util_funcs.R")
-source("../../../1_app/0c_update_funcs.R")
-# source("0d_output_funcs.R")
+source("../../1_app/0b_util_funcs.R")
+source("../../1_app/0c_update_funcs.R")
 
 # PREPARE DATA FILES
 # a date lookup key
@@ -49,15 +47,15 @@ dates = dates.prep(year = 2019)
 # historical BTF data
 btf_data = hist.index.prep(
   f.date = "6/1", l.date = "8/24",
-  chinook = read.csv(file.path("../../../1_app/Inputs", "Chinook Daily BTF.csv"), stringsAsFactors = F)
+  chinook = read.csv(file.path("../../1_app/Inputs", "Chinook Daily BTF.csv"), stringsAsFactors = F)
 )
 
 # historical total run abundance data
-N_data = read.csv(file.path("../../../1_app/Inputs", "run_size_ests.csv"), stringsAsFactors = F)
+N_data = read.csv(file.path("../../1_app/Inputs", "run_size_ests.csv"), stringsAsFactors = F)
 
 ```
 
-# Purpose{-}
+---
 
 This document is intended to be a companion to the _In-Season Chinook Salmon Bayesian Risk Assessment Tool_ (hereafter, "Bayes' Tool" or simply "the Tool") that describes the motivations for its development and the technicalities of what it does. While this document highlights some of the features of the Tool, it does not provide insights about how to use it. It is the hope of the developers that the Tool is intuitive to use on its own after being introduced to it, but to address any questions or confusion, detailed instructions are documented in the user manual.
 
@@ -73,7 +71,7 @@ The developers of the Bayesian Risk Assessment Tool and authors of this document
 
 # Contributors{-}
 
-Many people^[**Disclaimer:** The claims, conclusions, and all other statements made herein are those of the Tool Developers only, and do not necessarily reflect those of people who have provided feedback on the Tool, nor those of the agencies or organizations any of these people (including the Tool Developers) work for.] have given incredibly useful feedback on the Tool and on its utility for aiding in management discussions (listed alphabetically):
+Many people^[\textsc{Disclaimer}: The claims, conclusions, and all other statements made herein are those of the Tool Developers only, and do not necessarily reflect those of people who have provided feedback on the Tool, nor those of the agencies or organizations any of these people (including the Tool Developers) work for.] have given incredibly useful feedback on the Tool and on its utility for aiding in management discussions (listed alphabetically):
 
 *  Dr. Bill Bechtol, statistical consultant for the Kuskokwim River Inter-Tribal Fish Commission
 *  Dr. Lew Coggins, biology program supervisor, U.S. Fish and Wildlife Service, Yukon Delta National Wildlife Refuge
@@ -83,26 +81,26 @@ Many people^[**Disclaimer:** The claims, conclusions, and all other statements m
 
 # Resources{-}
 
-*  Tool interface: [**INSERT LINK**]
+*  Tool interface: <https://bstaton.shinyapps.io/BayesTool/>
 *  Tool user manual: [**INSERT LINK**]
 *  Tool technical documentation (this document): [**INSERT LINK**]
-*  Source code for the Tool and all documentation: [**INSERT LINK**]
-
-\newpage
+*  Source code for the Tool and all documentation: <https://github.com/bstaton1/kusko-bayes-tool>
 
 \newpage
 
 # Motivations and Philosophy
 
-The Tool was designed to address several difficulties with in-season run size assessment and decision-making in the Kuskokwim River Chinook salmon fishery. The primary in-season assessment information in the Kuskokwim River comes from the Bethel Test Fishery [BTF; @bue-lipka-2016]. The BTF provides daily catch-per-unit-effort (CPUE) data that provide an indication of the daily in-river run abundance and species composition. When historical years are considered in aggregate, the data provide a rich characterization of the variability in run timing as well. A strong temptation exists to look at the cumulative CPUE (hereafter CCPUE) on a given day and interpret it as an indicator of run size by comparing it to previous years' values on the same date, or to compare the accumulation time series of CPUE to previous years. The notion would be that by doing this one could ascertain if the run is large or small and set harvest targets based on that inference. However, this interpretation is subject to failure because of two primary problems:
+The Tool was designed to address several difficulties with in-season run size assessment and decision-making in the Kuskokwim River Chinook salmon fishery. The primary in-season assessment information in the Kuskokwim River comes from the Bethel Test Fishery [BTF; @bue-lipka-2016]. The BTF provides daily catch-per-unit-effort (CPUE) data that provide an indication of the daily in-river run abundance and species composition. When historical years are considered in aggregate, the data provide a rich characterization of the variability in run timing as well. A strong temptation exists to look at the cumulative CPUE (hereafter CCPUE) on a given day and interpret it as an indicator of run size by comparing it to previous years' values on the same date, or to compare the accumulation time series of CPUE to previous years. The notion would be that by doing this one could ascertain if the run is large or small and set harvest targets based on that inference. However, this interpretation (without a model to appropriately express the uncertainty) is subject to failure because of two primary problems:
 
 1.  Because of **variability in run timing**, two runs can be of largely different sizes yet show similar CCPUE on the same date. That is to say, early/small and large/late runs provide the indication of an average-sized run with average timing early in the season. Without knowing with high a high degree of certainty one of either run size or timing, it is impossibly to ascertain the other with any confidence. 
 
 2.  Because of **sampling variability** at the daily and annual time scale, the same end-of-season CCPUE counts have been observed in years with quite different run sizes.
 
-The acknowledgement of these two issues is not to say the BTF data are not useful. The other assessment information used in the Kuskokwim River Chinook salmon fishery (and many other salmon fisheries) is the pre-season run size forecast. It is the view of the Tool Developers that the BTF data should be used to _update_ rather than _replace_ the pre-season forecast in-season. Early in the season, when the BTF data provide neither accurate or confident run size estimates, the pre-season information should still have the most influence on the in-season perception of run size and any resulting management decisions. Later in the season, when BTF data provide a more accurate and confident run size estimate, it can start to overwhelm the pre-season information by either reinforcing what was previously thought or changing it. This philosophy has been applied to other salmon stocks, namely for Bristol Bay sockeye salmon [@fried-hilborn-1988; @hyun-etal-2005]. Two more considerations come to mind when the BTF data are thought of in this way:
+The acknowledgement of these two issues is not to say the BTF data are not useful, but rather an accounting for them may help ensure BTF data are interpreted with the appropriate level of confidence. 
 
-3.  How should the BTF data be used to update the pre-season forecast?
+The other assessment information used in the Kuskokwim River Chinook salmon fishery (and many other salmon fisheries) is the pre-season run size forecast. It is the view of the Tool Developers that the BTF data should be used to _update_ rather than _replace_ the pre-season forecast in-season. Early in the season, when the BTF data provide neither accurate or confident run size estimates, the pre-season information should still have the most influence on the in-season perception of run size and any resulting management decisions. Later in the season, when BTF data provide a more accurate and confident run size estimate, they can start to overwhelm the pre-season information by either reinforcing what was previously thought or changing it. This philosophy has been applied to other salmon stocks, namely for Bristol Bay sockeye salmon [@fried-hilborn-1988; @hyun-etal-2005]. Two more considerations come to mind when the BTF data are thought of in this way:
+
+3.  How should the BTF data be used to update the pre-season forecast (i.e., by what statistical method)?
 
 4.  How should the the updated information be used to inform responsive management strategies?
 
@@ -110,7 +108,7 @@ The primary motivations of the Tool are to address items 1 -- 3 in a statistical
 
 # Bayes' Theorem
 
-As an answer to item 3 above, a rational way to perform the updating of pre-season forecasts is to use _Bayesian Inference_. Bayesian Inference relies on a theorem derived from the laws of probability called _Bayes' Theorem_. Bayes' Theorem defines how our beliefs of the outcomes of uncertain events should rationally change as new information becomes available. In this framework, different outcomes are termed _hypotheses_ and beliefs that any one hypothesis (or any subset of hypotheses) is true are expressed as probabilities. In the context of salmon run size updating, different run sizes for the current year represent different competing hypotheses and new information is comprised of current BTF CCPUE data. Bayes' Theorem takes the following form:
+As an answer to item 3 above, a rational way to perform the updating of pre-season forecasts is to use _Bayesian Inference_. Bayesian Inference relies on a theorem derived from the laws of probability called _Bayes' Theorem_. Bayes' Theorem defines how our beliefs of the outcomes of uncertain events should rationally change as new information becomes available. In this framework, different outcomes are termed _hypotheses_ and beliefs that any one hypothesis (or any subset of hypotheses) is true are expressed as probabilities. In the context of salmon run size updating, different run sizes for the current year represent different competing hypotheses and new information is composed of the current BTF CCPUE data. Bayes' Theorem takes the following form:
 
 \begin{equation}
   \Pr(H_i \mid data)=\frac{\Pr(data \mid H_i)\Pr(H_i)}{\sum_{j=1}^J \Pr(data \mid H_j)\Pr(H_j)}
@@ -119,9 +117,9 @@ As an answer to item 3 above, a rational way to perform the updating of pre-seas
 
 Here, $\Pr(H_i \mid data)$ is known as the _posterior_ probability of each hypothesis $i$, which is the updated understanding of how likely it is that hypothesis $H_i$ is true after considering the new information contained in $data$. It is expressed as a conditional probability, and is read as "the probability of $H_i$ **given** we know the data were observed." The posterior probability is obtained from Bayes' Theorem, and is proportional to the _likelihood_ of observing the $data$ if we assumed hypothesis $H_i$ was true times the _prior_ probability that hypothesis $H_i$ was true before considering the $data$. The denominator in Bayes' Theorem is needed simply so that the posterior probabilities sum to one -- it serves the purpose of being a normalizing constant. The denominator is often written as $\Pr(data)$, that is, the probability of observing the data at all, integrated across all possible hypotheses.  
 
-From this description, we hope that it is becoming clear to readers why Bayesian Inference was selected to perform the in-season updating. On each day of the run, the prior probability of each run size $\Pr(H_i)$ is always the pre-season forecast, which has uncertainty about which run size will be the true run this year that can be expressed probabilistically. That is to say, using the forecast, we can assign probabilities to the hypothesis that the run will be less than, say, 100,000 fish. This is somewhat contrary to the way pre-season forecasts have been presented in the past, but the developers believe that there _is_ information in the forecast to suggest that some outcomes within the range are more likely than others. This claim is based on the performance of the _current forecasting method_ (which uses last year's run size as the anticipated run for this year): the midpoint of the forecast range makes smaller mistakes more often than it makes larger mistakes, thereby providing justification for placing more faith in run sizes near the center of the range than at the ends of the range.
+From this description, we hope that it is becoming clear to readers why Bayesian Inference was selected to perform the in-season updating. On each day of the run, the prior probability of each run size $\Pr(H_i)$ is always the pre-season forecast, which has uncertainty about which run size will be the true run this year that can be expressed probabilistically. That is to say, using the forecast, we can assign probabilities to the hypothesis that the run will be less than, say, 100,000 fish. This is somewhat contrary to the way pre-season forecasts for Kuskokwim River Chinook salmon have been presented in the past, but the developers believe that there _is_ information in the forecast to suggest that some outcomes within the range are more likely than others. This claim is based on the performance of the _current forecasting method_ (which uses last year's run size as the anticipated run for this year): the midpoint of the forecast range makes smaller mistakes more often than it makes larger mistakes, thereby providing justification for placing more faith in run sizes near the center of the range than at the ends of the range.
 
-After some BTF data have been collected ($data$), we can calculate the likelihood of observing those data if the run was truly less than 100,000 fish. Using Bayes' Theorem, we can calculate the posterior probability that the run is less than 100,000 fish after observing the $data$, thus providing an updated run estimate off of which to base management decisions about how much harvestable surplus there is. This process will be worked out in full in the example below.
+After some BTF data have been collected ($data$), we can calculate the likelihood of observing those data if the run was truly less than 100,000 fish. Using Bayes' Theorem, we can calculate the posterior probability that the run is less than 100,000 fish after observing the $data$, thus providing an updated run estimate off of which to base management decisions about how much harvestable surplus there is. This process and the accompanying calculations are worked out in an example below.
 
 ## Bayes' Theorem Example
 
@@ -352,21 +350,21 @@ This is illustrative example is just that: an illustration. Although the BTF and
 
 ## Overview
 
-The calculations presented here rely heavily on the tool of _Monte Carlo simulation_ (hereafter abbreviated MC) to propagate uncertainty from one step of the analysis to the next. MC methods simply sample random values of a quantity based on the known frequency of these quantities given by some statistical distribution [@bolker-2008].
+This section describes how run size and BTF data are used to create a continuous version of the example presented above. @staton-catalano-2019 performed an evaluation of this method for estimating run size in-season based on incomplete index information, and found that Bayesian updating provides more reliable run size estimates throughout the season than does trusting the pre-season forecast all season or trusting the inference from BTF data alone starting on June 10. 
 
-@staton-catalano-2019 performed an evaluation of this method for estimating run size in-season based on incomplete index information, and found that Bayesian updating provides more reliable run size estimates throughout the season than does trusting the pre-season forecast all season or trusting the inference from BTF data alone starting on June 10. 
+The calculations presented here rely heavily on the tool of _Monte Carlo simulation_ (hereafter abbreviated MC) to propagate uncertainty from one step of the analysis to the next. MC methods simply sample random values of a quantity based on the known frequency of these quantities given by some statistical distribution [@bolker-2008].
 
 **NOTE**: _much of the text in this section has been duplicated from @staton-catalano-2019, though only the portions relevant to calculations conducted by the Tool have been included._
 
 ## Prior Formulation
 
 The pre-season forecast is used to formulate the prior probability distribution to be updated with new information each day. The current forecasting method for the Kuskokwim River assumes the run in the current year will be similar in size to the run that occurred last year. Thus, the forecast states that the expectation (in the absence of any in-season information) is that the run will be the same size as last year, but has some uncertainty. We express this uncertainty using a bias-corrected log-normal distribution. The log-normal distribution is used because it (_a_) has a domain over only positive real numbers and (_b_) has the property of multiplicative variability (i.e., variation in terms of fish is smaller at anticipated small run sizes than at large run sizes). The bias-correction is used so that the expected value of the random variable $N$ is the specified mean parameter $N_{t-1}$. MC samples from the prior distribution are made as:
-  
+
 \begin{equation}
   \log(N_b) \sim \text{Normal}\left(\log(N_{t-1}) - \frac{\hat{\sigma}_{F}^2}{2}, {\hat{\sigma}_{F}}\right),
   (\#eq:prior)
 \end{equation}
-  
+
 where $N_b$ are MC samples the anticipated run size in the current year (of which $1 \times 10^6$ were drawn), $N_{t-1}$ is the estimated run size from the previous year, and $\hat{\sigma}_F$ is the standard deviation of the forecast, representing the uncertainty in it. This $\hat{\sigma}_F$ is calculated by applying the forecasting rule to all previous years and calculating the log-scale errors that the forecast would have made in the past had the rule been applied. That is, for all historical years we calculate the errors as:
     
 \begin{equation}
@@ -388,7 +386,7 @@ where $\bar{\varepsilon}_F$ is the mean of all $\varepsilon_{F,t}$ and $n_t$ is 
   (\#eq:cvtosig)
 \end{equation}
       
-@staton-catalano-2019 performed this analysis with run size data current from 1976 -- 2017 and found that $\hat{\sigma}_F \approx 0.28$; Figure \@ref(fig:fcst-errs) shown below is from this paper, and shows the historical run time series (panel _a_), the time series of historical forecast errors had the method been used starting in 1977 (panel _b_), and the distribution of these errors (panel _c_).
+@staton-catalano-2019 performed this analysis with run size data current from 1976 -- 2017 and found that $\hat{\sigma}_F \approx 0.28$; Figure \@ref(fig:fcst-errs) shown below is from this article, and shows the historical run time series (panel _a_), the time series of historical forecast errors had the method been used starting in 1977 (panel _b_), and the distribution of these errors (panel _c_).
 
 \begin{figure}[H]
   \centering
@@ -403,7 +401,7 @@ In some applications of Bayesian Inference, it is possible to use yesterday's po
 
 ### Historical Relationship
 
-Information about run size is contained in the cumulative BTF CPUE values observed each day of the run $\left(\text{CCPUE}_{d} = \sum_{j=1}^d \text{CPUE}_{j}\right)$, and thus these data form the foundation for linking in-season abundance index data to different run size hypotheses in a likelihood framework. The total end-of-season abundance each year ($N_t$) was related to $\text{CCPUE}_{d,t}$ at various points in the season using multiple linear regression:
+Information about run size is contained in the cumulative BTF CPUE values observed each day of the run $\left(\text{CCPUE}_{d} = \sum_{j=1}^d \text{CPUE}_{j}\right)$, and thus these data form the foundation for linking in-season abundance index data to different run size hypotheses in a likelihood framework. The total end-of-season abundance each year ($N_t$) is related to $\text{CCPUE}_{d,t}$ at various points in the season using multiple linear regression:
 
 \begin{equation}
   \log(N_t) = \beta_0 + \beta_{1,d} q_t + \beta_{2,d} \text{CCPUE}_{d,t} + \beta_{3,d} \text{CCPUE}_{d,t} q_t + \varepsilon_{d,t}
@@ -411,7 +409,7 @@ Information about run size is contained in the cumulative BTF CPUE values observ
 \end{equation}
 
 \noindent
-where $\beta_{j,d}$ are coefficients explaining the relationship on each day, $q_t$ is a binary indicator based on the BTF catchability period, and $\varepsilon_{d,t}$ are normally distributed errors with mean zero and variance equal to $\sigma_{d}^2$. The catchability period term was included because the efficiency of the BTF gear increased substantially beginning in 2008 as a result of a change in net-makers [@bue-lipka-2016]. Regression relationships like those in eq. (\ref{eq:fit-reg}) are commonly used to estimate run size based on in-season index data [@fried-hilborn-1988; @flynn-hilborn-2004; @hyun-etal-2005; @michielsens-cave-2018]. This relationship was fitted to historical data to obtain estimates of the coefficients ($\hat{\beta}_{j,d}$), their uncertainty in the form of a covariance matrix ($\hat{\Sigma}_d$), and the residual variability ($\hat{\sigma}_d$).
+where $\beta_{j,d}$ are coefficients explaining the relationship on each day, $q_t$ is a binary indicator based on the BTF catchability period, and $\varepsilon_{d,t}$ are normally distributed errors with mean zero and variance equal to $\sigma_{d}^2$. The catchability period term is included because the efficiency of the BTF gear increased substantially beginning in 2008 as a result of a change in net-makers [@bue-lipka-2016]. Regression relationships like those in eq. (\ref{eq:fit-reg}) are commonly used to estimate run size based on in-season index data [@fried-hilborn-1988; @flynn-hilborn-2004; @hyun-etal-2005; @michielsens-cave-2018]. This relationship can be fitted to historical data on any day $d$ of the run to obtain estimates of the coefficients ($\hat{\beta}_{j,d}$), their uncertainty in the form of a covariance matrix ($\hat{\Sigma}_d$), and the residual variability ($\hat{\sigma}_d$).
 
 Figure \@ref(fig:regs) below is from @staton-catalano-2019, and shows these relationships at several points in the run. Note that since all future years are in the post-2008 catchability period, the fitted lines corresponding to the pre-2008 will never be used to inform abundance predictions based on CCPUE, but these data are included in the fitted model to allow them to inform the amount of variability in run size one might expect at a given value of $\text{CCPUE}_{d}$ in some future year.
 
@@ -430,34 +428,34 @@ The relationships shown in Figure \@ref(fig:regs) contain much uncertainty about
 
 2.  Variability in $N$ at a given level of $\text{CCPUE}_d$, stored as residual variance ($\hat{\sigma}^2_d$). 
 
-MC methods were used to propagate this uncertainty into predictions of run size ($\dot{N}$) from $\text{CCPUE}_d$. First, $1 \times 10^6$ MC samples (indexed by $b$) were drawn from a multivariate normal distribution:
+MC methods are then used to propagate this uncertainty into predictions of run size ($\dot{N}$) from $\text{CCPUE}_d$. First, $1 \times 10^6$ MC samples (indexed by $b$) are drawn from a multivariate normal distribution:
 
 \begin{equation}
   (\hat{\beta}_{0,d,b}, \hat{\beta}_{1,d,b}, \hat{\beta}_{2,d,b}, \hat{\beta}_{3,d,b}) \sim \text{MVN}\left((\hat{\beta}_{0,d}, \hat{\beta}_{1,d}, \hat{\beta}_{2,d}, \hat{\beta}_{3,d}), \hat{\Sigma}_d\right),
   (\#eq:mc-coefs)
 \end{equation}
                  
-Then, $1 \times 10^6$ MC samples of random residuals were obtained (bias-correction included to ensure the mean of $e^{\hat{\varepsilon}_{d,b}} = 1$):
+Then, $1 \times 10^6$ MC samples of random residuals are obtained (bias-correction included to ensure the mean of $e^{\hat{\varepsilon}_{d,b}} = 1$):
                  
 \begin{equation}
   \hat{\varepsilon}_{d,b} \sim \text{Normal}\left(-\frac{\hat{\sigma}^2_{\varepsilon}}{2}, \hat{\sigma}_{\varepsilon}\right)
   (\#eq:mc-epi)
 \end{equation}
                  
-Finally, these MC samples were combined in a predictive version of the fitted regression model in eq. \@ref(eq:fit-reg):
+Finally, these MC samples are combined in a predictive version of the fitted regression model in eq. \@ref(eq:fit-reg):
                  
 \begin{equation}
   \log(\dot{N}_{d,b}) = \hat{\beta}_{0,d,b} + \hat{\beta}_{1,d,b} q + \hat{\beta}_{2,d,b} \text{CCPUE}_{d} + \hat{\beta}_{3,d,b} \text{CCPUE}_{d} q + \hat{\varepsilon}_{d,b}
 (\#eq:pred-reg)
 \end{equation}
 
-The set of MC samples $\dot{N}_{d,b}$ constitutes different plausible values of the true run size this year suggested by the currently observed BTF value $\text{CCPUE}_{d}$. This distribution was summarized using a one-dimensional kernel density estimator fitted to the $1 \times 10^6$ MC samples of $\dot{N}_{d,b}$ to obtain the probability density function (PDF) of the likelihood distribution. The resulting function is hereafter denoted by $\Pr(\text{CCPUE}_{d} \mid N_{i})$, where $N_i$ represents a specific continuous run size hypothesis.
+The set of MC samples $\dot{N}_{d,b}$ constitutes different plausible values of the true run size this year suggested by the currently observed BTF value $\text{CCPUE}_{d}$. Finally, this distribution is summarized using a one-dimensional kernel density estimator fitted to the $1 \times 10^6$ MC samples of $\dot{N}_{d,b}$ to obtain the probability density function (PDF) of the likelihood distribution. The resulting function is hereafter denoted by $\Pr(\text{CCPUE}_{d} \mid N_{i})$, where $N_i$ represents a specific continuous run size hypothesis.
 
 ## Posterior Formulation
-                 
-To obtain Bayesian updates of the perceived run size, the lognormal distribution representing uncertainty in the pre-season forecast was used as the prior information each day [denoted $\Pr(N_i)$]. Although this was a simple one parameter Bayesian estimation problem, the likelihood PDF [$\Pr(\text{CCPUE}_{d} \mid N_{i})$] did not have a well-defined parametric form which could have allowed direct analytical calculation of the posterior PDF [$\Pr(N_{i} \mid \text{CCPUE}_{d})$]; which is not an uncommon situation. Instead, a custom random walk Metropolis-Hastings Markov Chain Monte Carlo (MCMC) algorithm [@chib-greenberg-1995] was written using a lognormal proposal distribution. The lognormal proposal distribution was used as opposed to a symmetrical distribution (like the normal distribution) to prevent negative proposals. The standard deviation of the proposal distribution was tuned such that the acceptance rate of proposals was between 0.2 and 0.4 [@bedard-2007].
 
-In the Metropolis-Hastings algorithm, random samples are drawn from the posterior. This is conducted by generating a time series of random values by either "jumping" to a proposal value or "staying" at the current value. The probability to stay or jump is defined by the ratio of the posterior probability of each value of $N$: $\frac{\Pr(proposed)}{\Pr(current)}$, where $\Pr(proposed)$ and $\Pr(current)$ are calculated using the numerator of Bayes' Theorem in eq. \@ref(eq:bt). If the proposal has higher posterior probability than the current value, the algorithm will always jump to it and it will be the current value for the next decision in the time series. However, if the proposed value has lower posterior probability, the action to jump will be made with probability equal to the ratio. By carrying out a long time series of such decisions, the values retained as the current value are samples drawn in proportion to their posterior probability.
+To obtain Bayesian updates of the perceived run size, the lognormal distribution representing uncertainty in the pre-season forecast is used as the prior information each day [denoted $\Pr(N_i)$]. Although this is a simple one parameter Bayesian estimation problem, the likelihood PDF [$\Pr(\text{CCPUE}_{d} \mid N_{i})$] does not have a well-defined parametric form which could allow direct analytical calculation of the posterior PDF [$\Pr(N_{i} \mid \text{CCPUE}_{d})$] (this is not an uncommon situation). Instead, a custom random walk Metropolis-Hastings Markov Chain Monte Carlo (MCMC) algorithm [@chib-greenberg-1995] is used. A lognormal proposal distribution is used by the algorithm as opposed to a symmetrical distribution (like the normal distribution) to prevent negative proposals. The standard deviation of the proposal distribution can be tuned such that the acceptance rate of proposals falls between 0.2 and 0.4 [@bedard-2007].
+
+In the Metropolis-Hastings algorithm, random samples are drawn from the posterior. This is conducted by generating a time series of random values by either "jumping" to a proposal value or "staying" at the current value. The probability of staying or jumping is defined by the ratio of the posterior probability of each value of $N$: $\frac{\Pr(proposed)}{\Pr(current)}$, where $\Pr(proposed)$ and $\Pr(current)$ are calculated using the numerator of Bayes' Theorem in eq. \@ref(eq:bt). If the proposal has higher posterior probability than the current value, the algorithm will always jump to it and it will be the current value for the next decision in the time series. However, if the proposed value has lower posterior probability, the action to jump will be made with probability equal to the ratio. By carrying out a long time series of such decisions, the values retained as the current value are samples drawn in proportion to their posterior probability.
 
 ### Posterior Convergence Diagnostics
 
@@ -471,12 +469,12 @@ MCMC is commonly used to estimate a posterior distribution, but its behavior mus
 \end{figure}
                  
 # Risk Analysis Calculations
-                 
+
 Samples from the three PDFs (prior, likelihood, and posterior) on their own are of little utility to management decisions. Instead, managers might wish to know how different management actions (i.e., different season-wide harvest targets) will affect the likelihood of the occurrence of undesirable escapement outcomes. This constitutes a risk analysis and the steps we have outlined so far have all been to allow us to perform the calculations that follow.
                  
 ## Cumulative Probability
-                 
-Managers may be interested in a quantity $Y$, where $Y$ is the probability that drainage-wide escapement (hereafter denoted $S$) will fall below a limit escapement point $L$ if a target harvest $T$ is taken this season. For this calculation, we will need to introduce the _empirical cumulative density function_, hereafter abbreviated as "CDF." The CDF is the fraction of all random numbers that are less than or equal to some number of interest. If we ignore harvest for the moment, this fraction can be thought of as a probability that the run size this year will be smaller than some number. For ease of formal presentation, let us define a binary indicator function $\psi$:
+
+Managers may be interested in a quantity $Y$, where $Y$ is the probability that drainage-wide escapement (hereafter denoted $S$) will fall below a limit escapement point $L$ if a target harvest $T$ is taken this season. For this calculation, we will need to introduce the _empirical cumulative density function_, hereafter abbreviated as "CDF." The CDF is the fraction of a random sample that have values less than or equal to some number of interest. If we ignore harvest for the moment, this fraction can be thought of as a probability that the run size this year will be smaller than some number. For ease of formal presentation, let us define a binary indicator function $\psi$:
                    
 \[
   \psi(z; x_i) = \left\{ \begin{array}{ll}
@@ -495,19 +493,19 @@ $x_i$ is an element in a vector $\bf{x}$ of random samples from one of the three
                    
 where $n$ is the number of elements in the vector $\bf{x}$. If we perform $\Phi(100,000; \mathbf{N})$ and obtain the result 0.3, that indicates there is a 30% chance that the run will be less than or equal to 100,000 fish, _conditional on the information used and assumptions made_ to obtain $\bf{N}$. Conversely, we can perform $1 - \Phi(100,000; \mathbf{N})$ to obtain the probability that the run will be greater than 100,000 fish. 
                    
-Now to use the CDF function $\Phi$ for risk analysis. Suppose managers are considering harvesting $T$ fish for the season, and wish to know the probability that $S$ will be less than $L$ if _exactly_ $T$ fish are harvested this season. We can perform this calculation using $\Phi(L+T; \mathbf{N})$. As an explanation, consider the following _example_ (emphasis on example). Managers wish to maintain $S>65,000$ and are considering allowing a total target harvest of $T = 40,000$ fish for the season. The probability of $S \leq 65,000$ if $T=40,000$ is the same as the probability that the total run is less than 65,000 plus 40,000. 
+Now to use the CDF function $\Phi$ for risk analysis. Suppose managers are considering harvesting $T$ fish for the season, and wish to know the probability that $S$ will be less than or equal to $L$ if _exactly_ $T$ fish are harvested this season. We can perform this calculation using $\Phi(L+T; \mathbf{N})$. As an explanation, consider the following _example_ (emphasis on example). Managers wish to maintain $S>65,000$ and are considering allowing a total target harvest of $T = 40,000$ fish for the season. The probability of $S \leq 65,000$ if $T=40,000$ is the same as the probability that the total run is less than or equal to 65,000 + 40,000. 
                    
 If $U$ fish have already been harvested (without uncertainty) the calculation for a proposition of harvesting $V$ _additional_ fish would be $\Phi(L+V; \mathbf{N}-U)$. If there is uncertainty in $U$, then the calculation can proceed as $\Phi(L+V; \mathbf{N}-\mathbf{U})$ where $\bf{U}$ is a vector of MC samples reflecting the expected harvest already taken as well as the understood uncertainty in it. 
                    
-If we wish to know the probability that $S$ will be _between_ $A$ and $B$ if $T$ fish are harvested, where $B > A$, then we can calculate $\Phi(B+T; \mathbf{N}) - \Phi(A+T; \mathbf{N})$ to obtain this probability. If $U$ fish have already been harvested, the calculation would be $\Phi(B+T; \mathbf{N-U}) - \Phi(A+T; \mathbf{N-U})$. This calculation may be desired if managers wish to know what the probability is that $S$ will fall within the escapement goal (or some other) range. 
+If we wish to know the probability that $S$ will be _between_ $A$ and $B$ if $T$ fish are harvested, where $B > A$, then we can calculate $\Phi(B+T; \mathbf{N}) - \Phi(A+T; \mathbf{N})$ to obtain this probability. If $U$ fish have already been harvested, the calculation would be $\Phi(B+T; \mathbf{N-U}) - \Phi(A+T; \mathbf{N-U})$. This calculation may be desired if managers wish to know the probability that $S$ will fall within the escapement goal (or some other) range. 
                    
 ## The Notion of $P^*$
-                   
-One approach to using the Tool would be to set a critical escapement limit $L$ such that managers would deem the event $S \leq L$ undesirable. Managers can then select a maximum probability of the occurrence of the undesirable event $S \leq L$ they are willing to live with. In the harvest control systems literature [@shertzer-etal-2010; @prager-etal-2003], this maximum probability is known as $P^*$ and is an expression of maximum acceptable risk (i.e., risk tolerance). The option in the Tool entitled "Risk Analysis: Choose Harvest Target" uses the $P^*$ notion to pick the maximum allowable harvest that would result in $\Pr(S \leq L) < P^*$. Note that it is entirely possible to obtain the same suggested target harvest using two different levels of $P^*$ and $L$.
+
+One approach to using the Tool is to set a critical escapement limit $L$ such that managers would deem the event $S \leq L$ undesirable. Managers can then select a maximum probability of the occurrence of the undesirable event $S \leq L$ they are willing to live with. In the harvest control systems literature [e.g., @shertzer-etal-2010; @prager-etal-2003], this maximum probability is known as $P^*$ and is an expression of maximum acceptable risk (i.e., risk tolerance). The option in the Tool entitled "Risk Analysis: Choose Harvest Target" uses the $P^*$ notion to pick the maximum allowable harvest that would result in $\Pr(S \leq L) < P^*$. Note that it is entirely possible to obtain the same suggested target harvest using two different levels of $P^*$ and $L$.
                    
 ## An Alternative
-                   
-Some users of the Tool may feel that the rather automated nature of the $P^*$ notion is too mechanical and following it rigorously doesn't leave room for flexibility. These users would be perfectly justified in making such a claim, and thus an additional option was included into the Tool under the "Risk Analysis: Compare Harvest Targets". In this tab, users can propose harvest targets and see what the probabilities of different escapement outcomes would be, and pick the harvest target that is most consistent with their own levels of risk tolerance.
+
+Some users of the Tool may feel that the rather automated nature of the $P^*$ notion is too mechanical and following it rigorously doesn't leave room for flexibility. These users would be perfectly justified in making such a claim, and thus an additional option is included in the Tool under the "Risk Analysis: Compare Harvest Targets". In this tab, users can propose harvest targets and see what the probabilities of different escapement outcomes would be, and pick the harvest target that is most consistent with their own levels of risk tolerance.
 
 ## A Concluding Remark
 
