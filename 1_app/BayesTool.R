@@ -97,7 +97,7 @@ file.copy(from = "../2_docs/BayesTool_HistData/BayesTool_HistData.pdf", to = "In
 
 ##### CREATE USER INTERFACE #####
 ui = navbarPage(
-  title = strong("In-season Chinook Salmon Bayesian Risk Assessment Tool"), 
+  title = strong("Chinook Salmon In-season Bayesian Risk Assessment Tool"), 
   windowTitle = "Bayes' Tool",
   theme = shinytheme("cerulean"),
   
