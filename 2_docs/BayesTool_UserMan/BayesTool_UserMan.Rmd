@@ -475,12 +475,14 @@ The table output will look something like this:
 knitr::include_graphics("screenshots/2_Risk Analysis/2_CompareHobj/6_table.PNG")
 ```
 
-The interpretation of the rows is the same as in the **Choose Harvest Objective** table so we advise readers to consult the description of the table found in [that section](#p-star-output) for help in interpretation. However, the columns now correspond to the three selected candidate harvest objectives. This table indicates that if no fish are to be harvested, the expected escapement would be 116,000 fish and that the probability that escapement would be less than 65,000 fish is 0.01. If 20,000 fish were harvested (H2), then the probability that the escapement will fall within the drainage-wide escapement goal range of 65,000 -- 120,000 is 0.69, but that the probability of escapement falling below 65,000 is 0.12. 
+The interpretation of the rows is the same as in the **Choose Harvest Objective** table so we advise readers to consult the description of the table found in [that section](#p-star-output) for help in interpretation. However, the columns now correspond to the three selected candidate harvest objectives. This table indicates that if no fish are to be harvested, the expected escapement would be 116,000 fish and that the probability that escapement would be less than 65,000 fish is 0.01. If 20,000 fish were harvested (H2), then the probability that the escapement will fall within the drainage-wide escapement goal range of 65,000 -- 120,000 is 0.69. 
 
 # \faicon{envelope} **Contact**
 
 If users have more questions about the Tool, please contact the lead developer, Ben Staton (<bas0041@auburn.edu>). We are also ready and willing to receive any feedback, requests for additional functionality, notifications of any bugs (i.e., mistakes) users might find, etc. 
 
----
+\clearpage
+\lhead{\empty}
+\rhead{\empty}
 
 # References
