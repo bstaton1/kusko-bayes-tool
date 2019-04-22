@@ -1,32 +1,29 @@
 ---
-title: "In-Season Bayesian Risk Assessment Tool"
-subtitle: "Historical Data"
+title: "Historical Data"
+subtitle: "Chinook Salmon In-Season Bayesian Risk Assessment Tool"
 output: 
   bookdown::pdf_document2:
     toc: false
     toc_depth: 2
     includes:
       in_header: preamble.tex
+      before_body: ../before_body.tex
     citation_package: natbib
-bibliography: cites.bib
-biblio-style: myapalike
+bibliography: ../cites.bib
+biblio-style: ../myapalike
 documentclass: article
 link-citations: true
-linkcolor: black
-urlcolor: black
+linkcolor: blue
+urlcolor: blue
 citecolor: black
 fontsize: 12pt
-editor_options: 
-  chunk_output_type: console
 ---
 
-\thispagestyle{fancy}
 \pagenumbering{gobble}
 
 ```{r setup, include=FALSE}
 # library(bookdown)
 knitr::opts_chunk$set(echo = F, warning = F, message = F)
-# htmltools::tagList(rmarkdown::html_dependency_font_awesome())
 ```
 
 ```{r Data prep}
@@ -57,12 +54,9 @@ btf_data = hist.index.prep(
 
 # historical total run abundance data
 N_data = read.csv(file.path("../../1_app/Inputs", "run_size_ests.csv"), stringsAsFactors = F)
-
 ```
 
-# Purpose{-}
-
-This document is intended to be a companion to the _In-Season Chinook Salmon Bayesian Risk Assessment Tool_ (hereafter, "Bayes' Tool" or simply "the Tool") that provides some historical data users can test the Tool out with.
+This document is intended to be a companion to the Chinook Salmon In-Season Bayesian Risk Assessment Tool (hereafter, "Bayes' Tool" or simply "the Tool") that provides some historical data users can test the Tool out with.
 
 This document is organized into two sections:
 
@@ -74,15 +68,8 @@ This document is organized into two sections:
 
 **The Tool was developed for Kuskokwim River Chinook salmon only**. Hereafter, all references in this document to salmon, fish, runs, escapement, and harvest are about the drainage-wide stock of Chinook salmon in the Kuskokwim River.
 
-# Resources{-}
-
-*  Tool interface: [**INSERT LINK**]
-*  Tool user manual: [**INSERT LINK**]
-*  Tool technical documentation: [**INSERT LINK**]
-*  Tool historical data (this document): [**INSERT LINK**]
-*  Source code for the Tool and all documentation: [**INSERT LINK**]
-
-\newpage
+\clearpage
+\pagenumbering{arabic}
 
 # Values for Estimation Tab {-}
 
@@ -106,7 +93,7 @@ colnames(tab) = paste("\\textbf{", c("Year$^\\text{a}$", "Mean$^\\text{b}$", "CV
 kable(tab, "latex", booktabs = T,
       caption = "Pre-season run size forecast expectation (mean) and uncertainty (coefficient of variation; CV). Run size data are from \\cite{liller-etal-2018}.",
       escape = F, linesep = "", align = "crr") %>%
-  kable_styling(full_width = F, latex_options = c("HOLD_position", "striped"), stripe_color = "stripe-gray") %>%
+  kable_styling(full_width = F, latex_options = c("HOLD_position", "striped"), stripe_color = "light-grey") %>%
   column_spec(1:3, width = "75px") %>%
   footnote(
     general = "Do not enter commas into the tool.",
@@ -141,7 +128,7 @@ kable(tab, "latex", booktabs = T,
       caption = "Cumulative catch-per-unit-effort (CCPUE) from the Bethel Test Fishery. 
       These data are also available online$^\\text{a}$. The methods for the Bethel Test Fishery are described in \\cite{bue-lipka-2016}.",
       escape = F, linesep = "", align = paste("c", paste(rep("r", length(inc_dates)), collapse = ""), sep = "")) %>%
-  kable_styling(full_width = F, latex_options = c("HOLD_position", "striped"), stripe_color = "stripe-gray") %>%
+  kable_styling(full_width = F, latex_options = c("HOLD_position", "striped"), stripe_color = "light-grey") %>%
   # column_spec(1:3, width = "75px") %>%
   footnote(
     alphabet = c("\\\\textbf{BTF Data:} \\\\url{http://www.adfg.alaska.gov/index.cfm?adfg=commercialbyareakuskokwim.btf}"),
@@ -167,13 +154,13 @@ N_true = prettify(N_true)
 
 tab = cbind(year = inc_yrs, N = N_true, H_true)
 tab[,"year"] = paste("\\textbf{", tab[,"year"], "}", sep = "")
-colnames(tab) = paste("\\textbf{", c("Year", "Run Size$^\\text{1}$", "Minimum$^\\text{2}$", "Medium$^\\text{3}$", "Maximum$^\\text{d}$"), "}", sep = "")
+colnames(tab) = paste("\\textbf{", c("Year", "Run Size$^\\text{a}$", "Minimum$^\\text{1}$", "Medium$^\\text{2}$", "Maximum$^\\text{3}$"), "}", sep = "")
 
 # make the table
 kable(tab, "latex", booktabs = T,
       caption = "Estimated run size in each year and different levels of harvest that would have resulted in different levels of escapement. For example, the minimum value is the number of fish that could have been harvested to obtain exactly 120,000 escapement. Zero values indicate any level of harvest would have resulted in escapement less than the specific escapement level of interest.",
       escape = F, linesep = "", align = paste("c", paste(rep("c", 4), collapse = ""), sep = "")) %>%
-  kable_styling(full_width = F, latex_options = c("HOLD_position", "striped"), stripe_color = "stripe-gray") %>%
+  kable_styling(full_width = F, latex_options = c("HOLD_position", "striped"), stripe_color = "light-grey") %>%
   column_spec(2:5, width = "75px") %>%
   footnote(title_format = c("bold", "underline"),
     footnote_order = c("general", "alphabet", "number", "symbol"),

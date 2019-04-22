@@ -1,19 +1,20 @@
 ---
-title: "In-Season Bayesian Risk Assessment Tool"
-subtitle: "Technical Documentation"
+title: "Technical Documentation"
+subtitle: "Chinook Salmon In-Season Bayesian Risk Assessment Tool"
 output: 
   bookdown::pdf_document2:
     toc: true
     toc_depth: 2
     includes:
       in_header: preamble.tex
+      before_body: ../before_body.tex
     citation_package: natbib
-bibliography: cites.bib
-biblio-style: myapalike
+bibliography: ../cites.bib
+biblio-style: ../myapalike
 documentclass: article
 link-citations: true
-linkcolor: black
-urlcolor: black
+linkcolor: blue
+urlcolor: blue
 citecolor: black
 fontsize: 12pt
 ---
@@ -23,7 +24,6 @@ fontsize: 12pt
 ```{r setup, include=FALSE}
 # library(bookdown)
 knitr::opts_chunk$set(echo = F, warning = F, message = F)
-# htmltools::tagList(rmarkdown::html_dependency_font_awesome())
 ```
 
 ```{r Data prep}
@@ -55,38 +55,13 @@ N_data = read.csv(file.path("../../1_app/Inputs", "run_size_ests.csv"), stringsA
 
 ```
 
----
+\clearpage
+\pagenumbering{arabic}
 
-This document is intended to be a companion to the _In-Season Chinook Salmon Bayesian Risk Assessment Tool_ (hereafter, "Bayes' Tool" or simply "the Tool") that describes the motivations for its development and the technicalities of what it does. While this document highlights some of the features of the Tool, it does not provide insights about how to use it. It is the hope of the developers that the Tool is intuitive to use on its own after being introduced to it, but to address any questions or confusion, detailed instructions are documented in the user manual.
+This document is intended to be a companion to the Chinook Salmon In-Season Bayesian Risk Assessment Tool (hereafter, "Bayes' Tool" or simply "the Tool") that describes the motivations for its development and the technicalities of what it does. While this document highlights some of the features of the Tool, it does not provide insights about how to use it. It is the hope of the developers that the Tool is intuitive to use on its own after being introduced to it, but to address any questions or confusion, detailed instructions are documented in the user manual.
 
 **The Tool was developed for Kuskokwim River Chinook salmon only**. Hereafter, all references in this document to salmon, fish, runs, escapement, and harvest are about the drainage-wide stock of Chinook salmon in the Kuskokwim River.
 
-\clearpage
-\thispagestyle{plain}
-\pagenumbering{arabic}
-
-# Authors{-}
-
-The developers of the Bayesian Risk Assessment Tool and authors of this document are Ben Staton and Matt Catalano. Ben is a Graduate Student Researcher and USFWS Pathways Quantitative Ecologist as of spring 2019, who has studied the statistical aspects of Chinook salmon assessment and management issues in the Kuskokwim River since 2014. The statistical framework for the Tool was developed jointly by Ben and Matt, who is an associate professor and Principle Investigator of the Quantitative Fisheries Laboratory at Auburn University and has studied salmon assessment methods in Alaska since 2009.
-
-# Contributors{-}
-
-Many people^[\textsc{Disclaimer}: The claims, conclusions, and all other statements made herein are those of the Tool Developers only, and do not necessarily reflect those of people who have provided feedback on the Tool, nor those of the agencies or organizations any of these people (including the Tool Developers) work for.] have given incredibly useful feedback on the Tool and on its utility for aiding in management discussions (listed alphabetically):
-
-*  Dr. Bill Bechtol, statistical consultant for the Kuskokwim River Inter-Tribal Fish Commission
-*  Dr. Lew Coggins, biology program supervisor, U.S. Fish and Wildlife Service, Yukon Delta National Wildlife Refuge
-*  Zach Liller, Research Coordinator for the Arctic-Yukon-Kuskokwim Region, Alaska Department of Fish and Game, Commercial Fisheries Division
-*  Nick Smith, Kuskokwim Area Fisheries Research Biologist, Alaska Department of Fish and Game, Commercial Fisheries Division
-*  Kuskokwim area fisheries managers, from the Alaska Department of Fish and Game, Kuskokwim River Inter-Tribal Fish Commission, and the U.S. Fish and Wildlife Service
-
-# Resources{-}
-
-*  Tool interface: <https://bstaton.shinyapps.io/BayesTool/>
-*  Tool user manual: [**INSERT LINK**]
-*  Tool technical documentation (this document): [**INSERT LINK**]
-*  Source code for the Tool and all documentation: <https://github.com/bstaton1/kusko-bayes-tool>
-
-\newpage
 
 # Motivations and Philosophy
 
@@ -350,7 +325,7 @@ This is illustrative example is just that: an illustration. Although the BTF and
 
 ## Overview
 
-This section describes how run size and BTF data are used to create a continuous version of the example presented above. @staton-catalano-2019 performed an evaluation of this method for estimating run size in-season based on incomplete index information, and found that Bayesian updating provides more reliable run size estimates throughout the season than does trusting the pre-season forecast all season or trusting the inference from BTF data alone starting on June 10. 
+This section describes how historical run size and BTF data are used to create a continuous version of the example presented above. @staton-catalano-2019 performed an evaluation of this method for estimating run size in-season based on incomplete index information, and found that Bayesian updating provides more reliable run size estimates than the pre-season forecast starting on approximately June 17^th^, and that both the Bayesian update and the pre-season forecast were more reliable than estimates from the BTF data alone starting on June 10^th^. 
 
 The calculations presented here rely heavily on the tool of _Monte Carlo simulation_ (hereafter abbreviated MC) to propagate uncertainty from one step of the analysis to the next. MC methods simply sample random values of a quantity based on the known frequency of these quantities given by some statistical distribution [@bolker-2008].
 
