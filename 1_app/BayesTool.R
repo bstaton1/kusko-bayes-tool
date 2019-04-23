@@ -11,7 +11,7 @@
 ## -------------------------- ##
 
 ##### NECESSARY PACKAGES #####
-source("0a_install_packages.R")
+# source("0a_install_packages.R")
 library(shiny)           # for web apps
 library(shinythemes)     # to change the theme
 library(shinyBS)         # for pop up text
@@ -24,7 +24,7 @@ library(reshape2)        # easy data manipulation
 library(mvtnorm)         # to draw random regression coefficients
 library(scales)          # for transparent colors
 library(coda)            # for mcmc diagnostics
-library(gridExtra)       # for turning tables to plots
+library(gridExtra)       # for turning tables to images
 
 ##### SESSION SETUP #####
 # CLEAR THE WORKSPACE
@@ -53,25 +53,22 @@ N_data = read.csv(file.path(data_dir, "run_size_ests.csv"), stringsAsFactors = F
 ##### SET DEFAULT INPUT VALUES #####
 # forecast mean and cv defaults
 fcst_mean_def = round(N_data$N[nrow(N_data)], -3)
-fcst_cv_def = round(sig2cv(sd(log(N_data[1:(nrow(N_data)-1),"N"]) - log(N_data[2:nrow(N_data),"N"]))),2)
+true_runs = N_data[2:nrow(N_data),"N"]; fcst_runs = N_data[1:(nrow(N_data)-1),"N"]
+fcst_cv_def = round(sig2cv(sd(log(fcst_runs) - log(true_runs))),2)
 
 # btf ccpue and date defaults
-cdate_def = "6/12"
-ccpue_def = 66
+cdate_def = "6/1"
+ccpue_def = 0
 
 # mcmc defaults
-ni_def = 10000     # total samples (including thin and burnin)
+ni_def = 76000     # total samples (including thin and burnin)
 nb_def = 1000      # number of burnin
-nc_def = 2         # number of chains
+nc_def = 4         # number of chains
 prop_sig_def = 0.7 # sd of the lognormal proposal dist.
-
-# downstream harvest mean and cv defaults
-ds_harv_mean_def = 0
-ds_harv_cv_def = 0.15
 
 # total harvest mean and cv defaults
 harv_mean_def = 0
-harv_cv_def = 0.15
+harv_cv_def = 0.1
 
 # risk analysis defaults
 H_cand_lim_def = c(0, 50000)
@@ -85,21 +82,20 @@ n_mc = 1e6
 dens.max = 5e6
 
 # calculate times
-# sec_prior_like = calc_prior_like_time()
 sec_prior_like = 1.05
-# sec_per_mcmc = calc_mcmc_time()
 sec_per_mcmc = 1.919999e-05
 
-# copy the documentation to the Inputs location to ensure they are the most currenet versions
-file.copy(from = "../2_docs/BayesTool_TechDoc/BayesTool_TechDoc.pdf", to = "Inputs/BayesTool_TechDoc.pdf")
-file.copy(from = "../2_docs/BayesTool_UserMan/BayesTool_UserMan.html", to = "Inputs/BayesTool_UserMan.html")
-file.copy(from = "../2_docs/BayesTool_HistData/BayesTool_HistData.pdf", to = "Inputs/BayesTool_HistData.pdf")
+# copy the documentation to the Inputs location to ensure they are the most current versions
+# file.copy(from = "../2_docs/BayesTool_TechDoc/BayesTool_TechDoc.pdf", to = "Inputs/BayesTool_TechDoc.pdf", overwrite = T)
+# file.copy(from = "../2_docs/BayesTool_UserMan/BayesTool_UserMan.pdf", to = "Inputs/BayesTool_UserMan.pdf", overwrite = T)
+# file.copy(from = "../2_docs/BayesTool_HistData/BayesTool_HistData.pdf", to = "Inputs/BayesTool_HistData.pdf", overwrite = T)
 
 ##### CREATE USER INTERFACE #####
 ui = navbarPage(
   title = strong("Chinook Salmon In-season Bayesian Risk Assessment Tool"), 
   windowTitle = "Bayes' Tool",
   theme = shinytheme("cerulean"),
+  footer = "Version 1.2.0 (for use in 2019)",
   
   # ESTIMATION TAB
   tabPanel(
@@ -452,28 +448,22 @@ ui = navbarPage(
           width = 8,
           wellPanel(
             h4(strong("Overview")),
-            p("This tool was developed to allow users to easily perform run size estimation and evaluate
-              the consequences of different harvest alternatives in a risk analysis framework.",
+            p("This Tool was developed to facilitate the probabilistic treatment of multiple sources of run size information when 
+              considering allowable harvest targets for in-season management of Chinook salmon in the Kuskokwim River.
+              Treating run size probabilistically has several advantages, for example, it allows managers to consider the 
+              probability that escapement will be below some critical threshold if a given number of fish are harvested.",
               strong("As currently constructed, the tool performs these tasks for Chinook salmon in the Kuskokwim River only, 
                      and does not assess risk of failing to meet tributary-level escapement goals.")),
-            p("The tool updates run size estimates from the pre-season forecast using in-season data from the Bethel Test Fishery
-              using a statistical framework called", em("Bayesian Inference."), "Bayesian Inference provides updated probabilities
-              of the different run size outcomes managers are considering after obtaining new information, which can then
-              be used to assess the probability of meeting or failing to meet various levels of drainage-wide escapement if different numbers of fish were harvested."),
+            p("The Tool allows users to easily perform run size predictions by updating the pre-season forecast with new information
+              from the Bethel Test Fishery as it accumulates. This update is performed using a statistical framework called", em("Bayesian Inference."),
+              "Bayesian Inference provides updated probabilities of different run size outcomes managers are considering after obtaining new information, which can then
+              be used to assess the probability of having favorable or unfavorable escapment levels at various levels of harvest."),
             
-            h5(strong("What is Bayesian Inference?")),
-            p("This tool uses a statistical method known as", em("Bayesian Inference"), "to perform the update.
-              Bayesian Inference combines two sources of information to obtain an updated understanding of the value of a quantity we are uncertain about (the current year's run size is the uncertain quantity in this case). 
-              The first peice of information is called the ", em("prior knowledge"), "and is expressed as the probability of each possible run size", em("before observing new information about that quantity."),
-              "In this case, the pre-season forecast is the prior knowledge about the run size, and it can be expressed probabilistically (e.g., there is an X% chance the run will be smaller than Y).", 
-              "The second peice of information is known as ", em("new data"), "and in our case it is the sum of BTF catches through the current day of the run.",
-              "Bayesian Inference uses the new data to update the prior understanding to obtain an updated understanding using the laws of probability. This new understanding is referred to as", em("posterior knowledge"), "but to avoid confusion, in this tool it is referred to as ", em("updated knowledge."),
-              "A key property of Bayesian Inference is that the information source that is most precise (i.e., least uncertain) will contribute the most to updated knowledge, thus Bayesian Inference is a variance-based approach to weighting two sources of information."),
+            p("The statistical framework used in the tool has been evaluated and an", a("article summarizing this work", href = "https://www.nrcresearchpress.com/doi/10.1139/cjfas-2018-0176"), "has been accepted to a peer-reviewed journal."),
             
-            h5(strong("What is MCMC?")),
-            p("MCMC stands for Markov Chain Monte Carlo simulation, and it is a commonly-used family of numerical algorithms we use to implement Bayesian Inference. In most Bayesian problems, the calculations are too complex to be performed analytically (i.e., by solving equations with alegbra or calculus), which is why MCMC methods must be used.
-              It is because of MCMC that this tool takes some time to perform the update. You can find more details on MCMC in the technical documentation under 'Posterior Formulation'."
-            )
+            p("For more details on how to use the Tool, please see the", strong(icon("question-circle"), "User Manual.")),
+            p("For details on how the Tool works (including a worked example of Bayesian calculations for a 
+              simplified problem in this context), see the", strong(icon("file"), "Technical Documentation."))
             )
             )
               )
@@ -495,7 +485,7 @@ ui = navbarPage(
               strong(icon("envelope"), "Contact Page"), "to send us an email.
               After answering your question(s), we will consider updating the user manual to help future users."
             ),
-            downloadLink(outputId = "DL_UserMan", label = p(icon("download"), "Download the User Manual (HTML)"))
+            downloadLink(outputId = "DL_UserMan", label = p(icon("download"), "Download the User Manual (PDF)"))
             )
           )
         )
@@ -564,9 +554,7 @@ ui = navbarPage(
               )
             ),
             
-            p("The statistical framework used in the tool has been evaluated and is currently undergoing peer-review for publication in the primary scientific literature."),
-            p("The statistical aspects of the tool have undergone informal review by Alaska Department of Fish and Game biometric staff."),
-            p("While the tool and its philosophy is novel to the Kuskokwim River Chinook salmon stock, it builds on pioneering work by Carl Walters, Sandy Buckingham, Stephen Fried, and Ray Hilborn done in the 1970s and 1980s.
+            p("While the tool and its philosophy are novel to the Kuskokwim River Chinook salmon stock, they builds on pioneering work by Carl Walters, Sandy Buckingham, Stephen Fried, and Ray Hilborn done in the 1970s and 1980s.
               To our knowledge, the tool is the first to allow users to easily perform these types of relatively complex calculations without having to interact with spreadsheets or code."),
             p("The interface of this tool was developed using", a("Program R", href = "https://www.r-project.org/"), "which handles the statistical computing and an package called", a("Shiny", href = "https://shiny.rstudio.com/"),
               "which allows for integration of R code into the web-interface."),
@@ -590,7 +578,25 @@ ui = navbarPage(
           ) # well
         ) # column
       ) # row
+    ), # tabpanel
+    
+    tabPanel(
+      p(icon("code"), "Source Code", style = "margin:0;"),
+      fluidRow(
+        column(
+          width = 6,
+          wellPanel(
+            h4(strong("Source Code")),
+            p("Users of the Tool with experience writing and reading R code may find it beneficial to explore the
+              code for the Tool. All files needed to execute the Tool from any users local computer can be found 
+              in the", strong(icon("github"), "Github"), a("repository.", href = "https://github.com/bstaton1/kusko-bayes-tool")),
+            p("Advanced R users are invited to fork the repository and suggest changes via pull request.")
+          ) # well
+        ) # column
+      ) # row
     ) # tabpanel
+    
+    
   ) # navbarmenu
 ) # end of UI
 
@@ -1129,10 +1135,10 @@ server = function(input, output, session) {
   # download handler for the User Manual
   output$DL_UserMan = downloadHandler(
     filename = function() {
-      "BayesTool_UserMan.html"
+      "BayesTool_UserMan.PDF"
     },
     content = function(file) {
-      file.copy(file.path(data_dir, "BayesTool_UserMan.html"), file)
+      file.copy(file.path(data_dir, "BayesTool_UserMan.pdf"), file)
     }
   )
   
