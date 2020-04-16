@@ -44,7 +44,7 @@ source("../../1_app/0c_update_funcs.R")
 
 # PREPARE DATA FILES
 # a date lookup key
-dates = dates.prep(year = 2019)
+dates = dates.prep(year = 2020)
 
 # historical BTF data
 btf_data = hist.index.prep(

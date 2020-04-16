@@ -7,7 +7,7 @@
 ## -------------------------- ##
 ## DATE V1 STARTED: 3/14/2018 ##
 ## -------------------------- ##
-## DATE UPDATED:    3/12/2019 ##
+## DATE UPDATED:    4/16/2020 ##
 ## -------------------------- ##
 
 ##### NECESSARY PACKAGES #####
@@ -39,7 +39,7 @@ data_dir = "Inputs"
 
 # PREPARE DATA FILES
 # a date lookup key
-dates = dates.prep(year = 2019)
+dates = dates.prep(year = 2020)
 
 # historical BTF data
 btf_data = hist.index.prep(
@@ -95,7 +95,7 @@ ui = navbarPage(
   title = strong("Chinook Salmon In-season Bayesian Risk Assessment Tool"), 
   windowTitle = "Bayes' Tool",
   theme = shinytheme("cerulean"),
-  footer = "Version 1.2.0 (for use in 2019)",
+  footer = "Version 1.3.0 (for use in 2020)",
   
   # ESTIMATION TAB
   tabPanel(
