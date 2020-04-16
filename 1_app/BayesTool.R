@@ -71,7 +71,7 @@ harv_mean_def = 0
 harv_cv_def = 0.1
 
 # risk analysis defaults
-H_cand_lim_def = c(0, 50000)
+H_cand_lim_def = c(0, 100000)
 Sobj_def = 92500
 p.star_def = 0.5
 
