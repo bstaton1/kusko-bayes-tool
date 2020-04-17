@@ -4,7 +4,13 @@
 
 This repository stores the source code for the Kuskokwim River Chinook salmon In-season Bayesian Risk Assessment Tool ("the Tool" or, more commonly "the P* Model"). The Tool was first developed in spring 2018 using R and [Shiny](<https://shiny.rstudio.com/>), and following revisions based on suggestions from interested parties, was used to aid in decision-making that summer.
 
-The basic purpose of the Tool is to facilitate the probabilistic treatment of run size information when considering allowable harvest targets for in-season management of Chinook salmon in the Kuskokwim River (in western Alaska). A pre-season run size forecast is treated as a prior distribution for the understanding of run size before new information becomes available. This distribution alone can be used to select a harvest target for the season that is consistent with ensuring escapement will not fall below some critical threshold with some level of confidence (_i.e._, risk tolerance) based on the available information. The prior distribution can be updated with new information as it accumulates in test fishery cumulative catch per effort (which shows a weak historical relationship with total run size that improves marginally as the run progresses). Harvest targets can then be adjusted to maintain the same level of risk with respect to unfavorable escapement outcomes. 
+The basic purpose of the Tool is to facilitate the probabilistic treatment of run size information when considering allowable harvest targets for in-season management of Chinook salmon in the Kuskokwim River (in western Alaska). A pre-season run size forecast is treated as a Bayesian prior distribution for the understanding of run size before new information becomes available. This distribution alone can be used to select a harvest target for the season that is consistent with ensuring escapement will not fall below some critical threshold with some level of confidence (_i.e._, risk tolerance) based on the available information. The prior distribution can be updated with new information as it accumulates in test fishery cumulative catch per effort. The GIF below shows how this historical relationship becomes more informative as the season progresses.
+
+
+
+<img src="2_docs\for-readme\regression-progression.gif" alt="Clone/Download" width="500"/>
+
+The tool has users input the current test fishery information for the year, plugs it into this relation, and automates the updating of the prior treating this as new information about the size of the run. Harvest targets can then be adjusted based on the posterior to maintain a consistent level of risk with respect to unfavorable escapement outcomes. 
 
 The statistical methodology used by the Tool was retrospectively assessed and is presented in an article authored by the Tool Developers ([article](<https://www.nrcresearchpress.com/doi/10.1139/cjfas-2018-0176>); [code for analysis](<https://github.com/bstaton1/inseason-update-ms-analysis>)). More details about what the Tool does and how can be found in the **Technical Documentation** and information about how to use it can be found in the **User Manual** (both located in the _2_docs_ directory of this repository and accessible through the Tool interface in the "About" tab).
 
@@ -12,7 +18,7 @@ The statistical methodology used by the Tool was retrospectively assessed and is
 
 ### _Via_ URL
 
-Most users of the Tool will find it simplest to access it _via_ URL [here](<https://bstaton.shinyapps.io/BayesTool/>).
+Most users of the Tool will find it simplest to access it _via_ [URL](<https://bstaton.shinyapps.io/BayesTool/>).
 
 > It is the intent of the Tool Developers (B. Staton and M. Catalano) that this link will be updated with the most current version that should be used in the current year. This update will be posted each year following the release of total run size estimates from the previous year's run reconstruction (in the late spring of the current year). This information is needed for the pre-season forecast and for the historical relationship between run size and test fishery catches. This means the version used in prior years will not be accessible _via_ the link. However, the code will be available for all prior versions from this repository and can be executed using the approach below.
 
