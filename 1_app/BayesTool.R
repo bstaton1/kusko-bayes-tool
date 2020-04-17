@@ -459,7 +459,7 @@ ui = navbarPage(
               "Bayesian Inference provides updated probabilities of different run size outcomes managers are considering after obtaining new information, which can then
               be used to assess the probability of having favorable or unfavorable escapment levels at various levels of harvest."),
             
-            p("The statistical framework used in the tool has been evaluated and an", a("article summarizing this work", href = "https://www.nrcresearchpress.com/doi/10.1139/cjfas-2018-0176"), "has been accepted to a peer-reviewed journal."),
+            p("The statistical framework used in the tool has been evaluated and an", a("article summarizing this work", href = "https://www.nrcresearchpress.com/doi/10.1139/cjfas-2018-0176"), "has been published in a peer-reviewed scientific journal."),
             
             p("For more details on how to use the Tool, please see the", strong(icon("question-circle"), "User Manual.")),
             p("For details on how the Tool works (including a worked example of Bayesian calculations for a 
@@ -535,10 +535,11 @@ ui = navbarPage(
           width = 8,
           wellPanel(
             h4(strong("Tool Developers")),
-            p("The interface of this tool was developed and is maintained by Ben Staton. 
-              Ben is a Graduate Student Researcher and USFWS Pathways Quantitative Ecologist,
-              who has studied the statistical aspects of Chinook salmon assessment
-              and management issues in the Kuskokwim River since 2014. 
+            p("The interface of this tool was developed and is maintained by Dr. Ben Staton. 
+              Ben was a Graduate Student Researcher and USFWS Pathways Quantitative Ecologist at the time of
+              initial development and continues to update the tool for use by interested parties on a voluntary basis.
+              Ben's graduate research focused on the statistical aspects of Chinook salmon assessment
+              and management issues in the Kuskokwim River beginning in 2014 and ending in 2019. 
               The statistical framework for the tool was developed jointly by Ben and his advisor, Dr. Matt Catalano,
               who is the Principal Investigator of the", a("Quantitative Fisheries Laboratory", href = "http://sfaas.auburn.edu/catalano/quantitative-fisheries-lab/"),
               "at Auburn University and has studied salmon assessment methods in Alaska since 2009."),
@@ -546,17 +547,17 @@ ui = navbarPage(
             h4(strong("Contributors")),
             p("Many people have given incredibly useful feedback on this tool and on its utility for aiding in management discussions (listed alphabetically):",
               tags$ul(
-                tags$li(strong("Dr. Bill Bechtol,"), "statistical consultant for the Kuskokwim River Inter-tribal Fisheries Commission"),
-                tags$li(strong("Dr. Lew Coggins,"), "biology program supervisor, U.S. Fish and Wildlife Service, Yukon Delta National Wildlife Refuge"),
-                tags$li(strong("Zach Liller,"), "Research Coordinator for the Arctic-Yukon-Kuskokwim Region, Alaska Department of Fish and Game, Commercial Fisheries Division"),
-                tags$li(strong("Nick Smith,"), "Kuskokwim Area Fisheries Research Biologist, Alaska Department of Fish and Game, Commercial Fisheries Division"),
-                tags$li(strong("Kuskokwim area fisheries managers,"), "from the Alaska Department of Fish and Game, Kuskokwim River Inter-tribal Fisheries Commission, and the U.S. Fish and Wildlife Service")
+                tags$li("Dr. Bill Bechtol"),
+                tags$li("Dr. Lew Coggins"),
+                tags$li("Zach Liller"),
+                tags$li("Nick Smith"),
+                tags$li("Kuskokwim area fisheries managers")
               )
             ),
             
-            p("While the tool and its philosophy are novel to the Kuskokwim River Chinook salmon stock, they builds on pioneering work by Carl Walters, Sandy Buckingham, Stephen Fried, and Ray Hilborn done in the 1970s and 1980s.
+            p("While the tool and its philosophy are novel to the Kuskokwim River Chinook salmon stock, it builds on pioneering work by Carl Walters, Sandy Buckingham, Stephen Fried, and Ray Hilborn done in the 1970s and 1980s.
               To our knowledge, the tool is the first to allow users to easily perform these types of relatively complex calculations without having to interact with spreadsheets or code."),
-            p("The interface of this tool was developed using", a("Program R", href = "https://www.r-project.org/"), "which handles the statistical computing and an package called", a("Shiny", href = "https://shiny.rstudio.com/"),
+            p("The interface of this tool was developed using", a("Program R", href = "https://www.r-project.org/"), "which handles the statistical computing and a package called", a("Shiny", href = "https://shiny.rstudio.com/"),
               "which allows for integration of R code into the web-interface."),
             p("Funding for the development of this tool was provided by the Arctic-Yukon-Kuskokwim Sustainable Salmon Initiative, administered through the Bering Sea Fishermen's Association, through a research grant to Dr. Matt Catalano.")
           )
