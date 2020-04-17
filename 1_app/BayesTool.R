@@ -499,9 +499,7 @@ ui = navbarPage(
             h4(strong("Technical Documentation")),
             p("Should users be interested in the details of how this tool works, 
               the motivations for its development, and other technical information,
-              we encourage them to download and review the technical documentation,
-              Though we caution, much of the webpage is devoted to the statistical details of the tool,
-              and many users will not find it light reading material."),
+              we encourage them to download and review the technical documentation."),
             
             p("If you have questions or concerns about the information found in the technical documentation,
               please visit the ", strong(icon("envelope"), "Contact Page"),
