@@ -104,7 +104,7 @@ Consider the simple (and highly hypothetical) case in which managers are interes
 *  $H_{\text{medium}}$: greater than 100,000 fish but less than 150,000 fish
 *  $H_{\text{large}}$: greater than 150,000 fish but less than 220,000 fish. 
 
-We realize that these categories are not appropriate when taken in context of all historical run sizes  that have occurred in the Kuskokwim River [`r min(N_data$year)` -- `r min(N_data$year)` average: `r StatonMisc::prettify(round(mean(N_data$N), -3))`; range: `r StatonMisc::prettify(round(min(N_data$N), -3))` -- `r StatonMisc::prettify(round(max(N_data$N), -3))`; @larson-2020], but this example is for illustration purposes only, so please forgive us for this simplification for the time being. Using the pre-season forecast, managers assign the following prior probabilities:
+We realize that these categories are not appropriate when taken in context of all historical run sizes  that have occurred in the Kuskokwim River [`r min(N_data$year)` -- `r min(N_data$year)` average: `r StatonMisc::prettify(round(mean(N_data$N), -3))`; range: `r StatonMisc::prettify(round(min(N_data$N), -3))` -- `r StatonMisc::prettify(round(max(N_data$N), -3))`; @larson-2021], but this example is for illustration purposes only, so please forgive us for this simplification for the time being. Using the pre-season forecast, managers assign the following prior probabilities:
 
 ```{r prior-table}
 prior_sml = 0.3; prior_med = 0.6; prior_lrg = 0.1
