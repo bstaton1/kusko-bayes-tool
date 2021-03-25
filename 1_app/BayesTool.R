@@ -95,7 +95,7 @@ ui = navbarPage(
   title = strong("Chinook Salmon In-season Bayesian Risk Assessment Tool"), 
   windowTitle = "Bayes' Tool",
   theme = shinytheme("cerulean"),
-  footer = "Version 1.3.0 (for use in 2020)",
+  footer = "Version 1.4.0 (for use in 2021)",
   
   # ESTIMATION TAB
   tabPanel(
