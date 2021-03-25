@@ -479,7 +479,7 @@ The interpretation of the rows is the same as in the **Choose Harvest Objective*
 
 # \faicon{envelope} **Contact**
 
-If users have more questions about the Tool, please contact the lead developer, Ben Staton (<bas0041@auburn.edu>). We are also ready and willing to receive any feedback, requests for additional functionality, notifications of any bugs (i.e., mistakes) users might find, etc. 
+If users have more questions about the Tool, please contact the lead developer, Ben Staton (<bstaton.qes@gmail.com>). We are also ready and willing to receive any feedback, requests for additional functionality, notifications of any bugs (i.e., mistakes) users might find, etc. 
 
 \clearpage
 \lhead{\empty}

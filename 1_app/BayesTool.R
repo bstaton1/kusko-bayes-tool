@@ -572,7 +572,7 @@ ui = navbarPage(
             h4(strong("Contact")),
             p("Should users have any questions about the tool that were not answered by
               the user manual or technical documentation, please feel free to contact the lead tool developer, Ben Staton, 
-              at bas0041@auburn.edu"),
+              at bstaton.qes@gmail.com"),
             p("We are also ready and willing to hear about any feedback, suggestions for future functionality, or bugs you may find.")
           ) # well
         ) # column
