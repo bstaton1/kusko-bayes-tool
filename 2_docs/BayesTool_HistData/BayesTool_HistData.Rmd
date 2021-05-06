@@ -60,7 +60,7 @@ This document is intended to be a companion to the Chinook Salmon In-Season Baye
 
 This document is organized into two sections:
 
-1.  **Values for Estimation Tab**: here, users will find the appropriate information to enter on the Estimation tab for all years since 2008. Table \@ref(tab:fcst-table) shows the pre-season run size forecasts that would have been used had the run reconstruction [@smith-2019] been available back then, if the forecasting rule used now had been used back then, and if the run estimates were the same back then as they are now. Table \@ref(tab:btf-table) shows the cumulative catch-per-unit-effort at weekly intervals starting on June 12^th^ in these years.
+1.  **Values for Estimation Tab**: here, users will find the appropriate information to enter on the Estimation tab for all years since 2008. Table \@ref(tab:fcst-table) shows the pre-season run size forecasts that would have been used had the run reconstruction [@larson-2021] been available back then, if the forecasting rule used now had been used back then, and if the run estimates were the same back then as they are now. Table \@ref(tab:btf-table) shows the cumulative catch-per-unit-effort at weekly intervals starting on June 12^th^ in these years.
 
 2.  **Values for Reference**: here, users will find the "true" values the Tool attempts to estimate: run size and harvest levels given different escapement targets. 
 
