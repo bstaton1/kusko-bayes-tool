@@ -18,7 +18,7 @@ data_dir = "../../1_app/Inputs"
 
 # PREPARE DATA FILES
 # a date lookup key
-dates = dates.prep(year = 2020)
+dates = dates.prep(year = 2021)
 
 # historical BTF data
 btf_data = hist.index.prep(
@@ -121,11 +121,11 @@ junk = sapply(date_range, function(d) {
 # frames per second
 fps = 4
 
-# number of seconds to view the gif
-length(files)/fps
-
 # get all png file names
 files = list.files(fig_dir, pattern = "*\\.png$", full.names = T)
+
+# number of seconds to view the gif
+length(files)/fps
 
 # create the gif
 files %>%
