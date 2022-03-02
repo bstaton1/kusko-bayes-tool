@@ -60,7 +60,7 @@ This document is intended to be a companion to the Chinook Salmon In-Season Baye
 
 This document is organized into two sections:
 
-1.  **Values for Estimation Tab**: here, users will find the appropriate information to enter on the Estimation tab for all years since 2008. Table \@ref(tab:fcst-table) shows the pre-season run size forecasts that would have been used had the run reconstruction [@larson-2021] been available back then, if the forecasting rule used now had been used back then, and if the run estimates were the same back then as they are now. Table \@ref(tab:btf-table) shows the cumulative catch-per-unit-effort at weekly intervals starting on June 12^th^ in these years.
+1.  **Values for Estimation Tab**: here, users will find the appropriate information to enter on the Estimation tab for all years since 2008. Table \@ref(tab:fcst-table) shows the pre-season run size forecasts that would have been used had the run reconstruction [@larson-2022] been available back then, if the forecasting rule used now had been used back then, and if the run estimates were the same back then as they are now. Table \@ref(tab:btf-table) shows the cumulative catch-per-unit-effort at weekly intervals starting on June 12^th^ in these years.
 
 2.  **Values for Reference**: here, users will find the "true" values the Tool attempts to estimate: run size and harvest levels given different escapement targets. 
 
@@ -92,7 +92,7 @@ tab$year = paste("\\textbf{", tab$year, "}", sep = "")
 colnames(tab) = paste("\\textbf{", c("Year$^\\text{a}$", "Mean$^\\text{b}$", "CV"), "}", sep = "")
 
 kable(tab, "latex", booktabs = T,
-      caption = "Pre-season run size forecast expectation (mean) and uncertainty (coefficient of variation; CV). Run size data are from \\cite{larson-2021}.",
+      caption = "Pre-season run size forecast expectation (mean) and uncertainty (coefficient of variation; CV). Run size data are from \\cite{larson-2022}.",
       escape = F, linesep = "", align = "crr") %>%
   kable_styling(full_width = F, latex_options = c("HOLD_position", "striped"), stripe_color = "light-grey") %>%
   column_spec(1:3, width = "75px") %>%
@@ -169,7 +169,7 @@ kable(tab, "latex", booktabs = T,
     general_title = "",
     number_title = "Harvest that would have resulted in escapement at the:",
     alphabet = c(
-      "Most current run size estimates used; presented in \\\\cite{larson-2021}"
+      "Most current run size estimates used; presented in \\\\cite{larson-2022}"
     ),
     number = c(
       "upper end of the escapement goal: 120,000",
