@@ -1,15 +1,14 @@
 ##### SESSION SETUP #####
 library(stringr)
-library(StatonMisc)
-library(magick)
-library(purrr)
-library(dplyr)
 library(reshape2)
+library(gifski)
+library(dplyr)
 
 # CLEAR THE WORKSPACE
-rm(list = ls(all = T))
+rm(list = ls(all = TRUE))
 
 # LOAD ALL NECESSARY FUNCTIONS 
+# SET THE WORKING DIRECTORY TO THE LOCATION OF THIS FILE BEFORE RUNNING REST OF CODE
 source("../../1_app/0b_util_funcs.R")
 source("../../1_app/0c_update_funcs.R")
 source("../../1_app/0d_output_funcs.R")
@@ -18,7 +17,7 @@ data_dir = "../../1_app/Inputs"
 
 # PREPARE DATA FILES
 # a date lookup key
-dates = dates.prep(year = 2021)
+dates = dates.prep(year = 2022)
 
 # historical BTF data
 btf_data = hist.index.prep(
@@ -29,7 +28,10 @@ btf_data = hist.index.prep(
 # historical total run abundance data
 N_data = read.csv(file.path(data_dir, "run_size_ests.csv"), stringsAsFactors = F)
 
+# graphics device resolution (pixels per inch)
+ppi = 600
 
+# function to fit regression and plot data for one day of the season
 make_plot = function(cdate) {
   
   # format date for file name
@@ -38,10 +40,10 @@ make_plot = function(cdate) {
   file = paste0(paste(date_split, collapse = "-"), ".png")
   
   # open a graphics device file
-  file_device(file.path(fig_dir, file), h = 4, w = 5)
+  png(file.path(fig_dir, file), height = 4 * ppi, width = 5 * ppi, res = ppi)
 
   # extract the data for regression on this day
-  fit_data = prepare_fit_data(dt = cdate, index = btf_data, N = N_data)# fit the historical regression
+  fit_data = prepare_fit_data(dt = cdate, index = btf_data, N = N_data)
   
   # fit this day's regression
   fit = lm(log(N) ~ q * ccpue, data = fit_data)
@@ -80,7 +82,7 @@ make_plot = function(cdate) {
   # add observed data
   text(N ~ ccpue, data = subset(fit_data, q == 2), 
        col = scales::alpha("grey20", 0.5),
-       labels = substr(year, 3, 4), font = 2, xpd = T)
+       labels = substr(year, 3, 4), font = 2, xpd = TRUE)
   
   # add fitted line
   lines(pred_y ~ pred_x, lwd = 2)
@@ -96,6 +98,7 @@ make_plot = function(cdate) {
   junk = dev.off()
 }
 
+# a test plot
 # make_plot("6/30")
 
 # which dates to plot
@@ -114,7 +117,7 @@ date_range = dates$date[dates$day %in% day_range]
 fig_dir = "daily-figures"
 if (!dir.exists(fig_dir)) dir.create(fig_dir)
 junk = sapply(date_range, function(d) {
-  progress_updater(which(date_range == d), length(date_range), d)
+  cat("\rMaking Plot: ", d, " (", which(date_range == d), " of ", length(date_range), ")", sep = "")
   make_plot(d)
 })
 
@@ -122,17 +125,13 @@ junk = sapply(date_range, function(d) {
 fps = 4
 
 # get all png file names
-files = list.files(fig_dir, pattern = "*\\.png$", full.names = T)
+files = list.files(fig_dir, pattern = "*\\.png$", full.names = TRUE)
 
 # number of seconds to view the gif
 length(files)/fps
 
 # create the gif
-files %>%
-  map(image_read) %>% # reads each path file
-  image_join() %>% # joins image
-  image_animate(fps = fps) %>% # animates, can opt for number of loops
-  image_write("regression-progression.gif") # write to current dir
+gifski(png_files = files, gif_file = "regression-progression.gif", width = 5 * ppi, height = 4 * ppi, delay = 1/fps, loop = TRUE, progress = TRUE)
 
-# delete files
-unlink(fig_dir, recursive = T)
+# delete individual files
+unlink(fig_dir, recursive = TRUE)

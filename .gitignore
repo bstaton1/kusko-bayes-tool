@@ -34,3 +34,8 @@ vignettes/*.pdf
 
 # Shiny token, see https://shiny.rstudio.com/articles/shinyapps.html
 rsconnect/
+
+# outputs for ADFG
+2_docs/for-adfg/CDF.png
+2_docs/for-adfg/quantiles.csv
+

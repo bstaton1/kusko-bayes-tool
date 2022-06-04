@@ -1,6 +1,6 @@
 # kusko-bayes-tool
 
-**VERSION 1.4.0: For use in 2021**
+**VERSION 1.5.0: For use in 2022**
 
 This repository stores the source code for the Kuskokwim River Chinook salmon In-season Bayesian Risk Assessment Tool ("the Tool" or, more commonly "the P* Model"). The Tool was first developed in spring 2018 using R and [Shiny](<https://shiny.rstudio.com/>), and following revisions based on suggestions from interested parties, was used to aid in decision-making that summer.
 
