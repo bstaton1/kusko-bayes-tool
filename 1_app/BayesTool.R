@@ -39,7 +39,7 @@ data_dir = "Inputs"
 
 # PREPARE DATA FILES
 # a date lookup key
-dates = dates.prep(year = 2021)
+dates = dates.prep(year = 2022)
 
 # historical BTF data
 btf_data = hist.index.prep(
