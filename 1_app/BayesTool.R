@@ -233,7 +233,7 @@ ui = navbarPage(
           
           # tab for relationship plot
           tabPanel(
-            title = p(icon("bar-chart-o", "fa-1x"), strong("Relationship"), style = "font-size:16px"),
+            title = p(icon("chart-line", "fa-1x"), strong("Relationship"), style = "font-size:16px"),
             # dropdown menu for plot options
             hidden(
               div(
@@ -642,7 +642,7 @@ server = function(input, output, session) {
     total_time = ceiling(sec_prior_like + mcmc_time)
     time_amount = ifelse(total_time == 1, "second", "seconds")
     
-    helpText(icon("clock-o", "fa-1x"), paste("Estimated Time:", total_time, time_amount))
+    helpText(icon("clock", "fa-1x"), paste("Estimated Time:", total_time, time_amount))
     
   })
   
