@@ -17,7 +17,7 @@ data_dir = "../../1_app/Inputs"
 
 # PREPARE DATA FILES
 # a date lookup key
-dates = dates.prep(year = 2022)
+dates = dates.prep(year = 2023)
 
 # historical BTF data
 btf_data = hist.index.prep(
